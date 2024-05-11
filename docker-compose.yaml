@@ -1,0 +1,28 @@
+version: "3.7"
+# More info at https://github.com/pi-hole/docker-pi-hole/ and https://docs.pi-hole.net/
+services:
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    privileged: true
+    # For DHCP it is recommended to remove these ports and instead add: network_mode: "host"
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "5335:5335/tcp"
+      - "5335:5335/udp"
+      # - "67:67/udp" # Only required if you are using Pi-hole as your DHCP server
+      - "8081:80/tcp"
+    environment:
+      TZ: 'Europe/Copenhagen'
+      WEBPASSWORD: 'WG-epHo4'
+    # Volumes store your data between container upgrades
+    volumes:
+      - '/home/blix/pihole/etc-pihole:/etc/pihole'
+      - '/home/blix/pihole/etc-dnsmasq.d:/etc/dnsmasq.d'
+      - '/home/blix/pihole/unbound/unbound.conf.d:/etc/unbound/unbound.conf.d'
+    #   https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
+    cap_add:
+      - NET_ADMIN # Required if you are using Pi-hole as your DHCP server, else not needed
+    restart: unless-stopped
+
